@@ -1,0 +1,14 @@
+[{attribute,1,file,{'_',1}},
+  {attribute,1,module,function_clause},
+  {attribute,3,export,[{foo,0}]},
+  {attribute,4,export,[{bar,1}]},
+  {function,6,foo,0,[{clause,6,[],[],[{atom,7,foo}]}]},
+  {function,9,bar,1,[{clause,9,[{atom,9,first}],[],[{atom,10,first}]}]},
+  {eof,14}].
+[{attribute,1,file,{'_',1}},
+  {attribute,1,module,function_clause},
+  {attribute,3,export,[{foo,0}]},
+  {attribute,4,export,[{bar,1}]},
+  {function,6,foo,0,[{clause,6,[],[],[{atom,7,foo}]}]},
+  {function,9,bar,1,[{clause,11,[{atom,11,second}],[],[{atom,12,second}]}]},
+  {eof,14}].

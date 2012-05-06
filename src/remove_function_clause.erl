@@ -25,41 +25,17 @@
 %%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%%
 
--module(test_utils).
+-module(remove_function_clause).
 
--export([test_data/1]).
--export([assert_mutations/2]).
+-export([mutate/1]).
 
--include_lib("eunit/include/eunit.hrl").
+mutate(Forms) ->
+    {R,[]} = mt_utils:fold(fun mutate_fun/2, [], Forms),
+    R.
 
-test_data(Module) ->
-    ModuleString = atom_to_list(Module),
-    [BaseDir|_] = code:get_path(),
-    Source = filename:join([BaseDir,
-			    "..",
-			    "priv",
-			    ModuleString]),
-    case compile:file(Source,[debug_info,binary,report_errors]) of
-	{ok,Module,Binary} ->
-	    {ok, Mutations} = file:consult(filename:join([BaseDir,
-							  "..",
-							  "priv",
-							  ModuleString ++ "_mutations.data"])),
-	    {ok,{Module,[{abstract_code,AST}]}} = beam_lib:chunks(Binary,[abstract_code]),
-	    {raw_abstract_v1, Forms} =  AST,
-	    {Forms, Mutations};
-	Errors ->
-	    exit({error_during_compilation,filename:absname(BaseDir),Errors})
-    end.
+mutate_fun({function,Line,Name,Arity,[_,_|_] = Clauses}, State) ->
+    Ls = [ Clauses -- [Elt] || Elt <- Clauses],
+    Replace = [{function,Line,Name,Arity,L} || L <- Ls],
+    {replace, Replace, State}.
 
-assert_mutations([],[]) ->
-    ok;
-assert_mutations([],[_|_]=X) ->
-    io:format("Extra: ~p~~n",[X]),
-    exit({too_much_mutations,X});
-assert_mutations([_|_]=X,[]) ->
-    exit({too_few_mutations,X});
-assert_mutations([[_|P]|T],[[_|A]|T2]) ->
-    io:format("~p~n~p~n",[P,A]),
-    ?assertMatch(P,A),
-    assert_mutations(T,T2).
+

@@ -25,41 +25,12 @@
 %%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%%
 
--module(test_utils).
-
--export([test_data/1]).
--export([assert_mutations/2]).
+-module(remove_function_clause_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
-test_data(Module) ->
-    ModuleString = atom_to_list(Module),
-    [BaseDir|_] = code:get_path(),
-    Source = filename:join([BaseDir,
-			    "..",
-			    "priv",
-			    ModuleString]),
-    case compile:file(Source,[debug_info,binary,report_errors]) of
-	{ok,Module,Binary} ->
-	    {ok, Mutations} = file:consult(filename:join([BaseDir,
-							  "..",
-							  "priv",
-							  ModuleString ++ "_mutations.data"])),
-	    {ok,{Module,[{abstract_code,AST}]}} = beam_lib:chunks(Binary,[abstract_code]),
-	    {raw_abstract_v1, Forms} =  AST,
-	    {Forms, Mutations};
-	Errors ->
-	    exit({error_during_compilation,filename:absname(BaseDir),Errors})
-    end.
-
-assert_mutations([],[]) ->
-    ok;
-assert_mutations([],[_|_]=X) ->
-    io:format("Extra: ~p~~n",[X]),
-    exit({too_much_mutations,X});
-assert_mutations([_|_]=X,[]) ->
-    exit({too_few_mutations,X});
-assert_mutations([[_|P]|T],[[_|A]|T2]) ->
-    io:format("~p~n~p~n",[P,A]),
-    ?assertMatch(P,A),
-    assert_mutations(T,T2).
+all_mutations_test() ->
+    {Forms, Mutations} = test_utils:test_data(function_clause),
+    R = remove_function_clause:mutate(Forms),
+    test_utils:assert_mutations(Mutations,R),
+    ok.
