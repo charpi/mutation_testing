@@ -27,9 +27,14 @@
 
 -module(replace_atom).
 
--export([mutate/2]).
+-export([mutate/1]).
 
+mutate(Forms) ->
+    {R,[]} = mt_utils:fold(fun mutate_fun/2,
+			   [],
+			   Forms),
+    R.
 
-mutate({atom,Line,_Atom}, State) ->
+mutate_fun({atom,Line,_Atom}, State) ->
     Replace = {atom,Line,'$$$$'},
     {replace, Replace, State}.

@@ -27,9 +27,15 @@
 
 -module(replace_operator).
 
--export([mutate/2]).
+-export([mutate/1]).
 
-mutate({op,V1,Op,V2,V3},State) ->
+mutate(Forms) ->
+    {R,[]} = mt_utils:fold(fun mutate_fun/2,
+			   [],
+			   Forms),
+    R.
+
+mutate_fun({op,V1,Op,V2,V3},State) ->
     NewElt = {op,V1,new_op(Op),V2,V3},
     {replace, NewElt, State}.
 

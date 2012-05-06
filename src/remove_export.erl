@@ -27,12 +27,16 @@
 
 -module(remove_export).
 
--export([mutate/2]).
+-export([mutate/1]).
 
+mutate(Forms) ->
+    {R,[]} = mt_utils:fold(fun mutate_fun/2, [], Forms),
+    R.
 
-mutate({attribute,_,export,[_]},State) ->
+mutate_fun({attribute,_,export,[_]}, State) ->
     {delete, State};
-mutate({attribute,Line,export,Exports}, State) ->
+mutate_fun({attribute,Line,export,Exports}, State) ->
     Ls = [ Exports -- [Elt] || Elt <- Exports],
     Replace = [{attribute,Line,export,L} || L <- Ls],
     {replace, Replace, State}.
+

@@ -34,15 +34,15 @@
 	       mutations = []}).
 
 fold(Fun, UserState, Forms) ->
-    fold_forms(Fun,UserState,Forms,#state{}).
+    fold_forms(Fun, UserState, Forms, #state{}).
 
-fold_forms(_Fun,UserState,[],State) ->
-    {State#state.mutations,UserState};
-fold_forms(Fun,UserState,[H|Forms],State) ->
+fold_forms(_, UserState, [], State) ->
+    {State#state.mutations, UserState};
+fold_forms(Fun, UserState, [H|Forms], State) ->
     Prev = State#state.prev,
     
-    {Action,NewState,NewUS} = call_element(H,Fun,Forms,UserState,State),
-    {Z,X} = case {Action,H} of
+    {Action, NewState, NewUS} = call_element(H, Fun, Forms, UserState, State),
+    {Z,X} = case {Action, H} of
     		{nothing,{function,A,B,C,Clauses}} ->
     		    {Ms, NUS2} = fold(Fun,NewUS,Clauses),
 		    MFunctions = [{function,A,B,C,M} || M <- Ms],
@@ -82,23 +82,22 @@ add_mutation(New, Forms, State) when is_list(New) ->
 add_mutation(New, Forms, State) ->
     add_mutation([New], Forms, State).
 
-call_element(H,Fun, Forms, UserState,State) ->
-    case catch Fun(H,UserState) of
+call_element(H, Fun, Forms, UserState, State) ->
+    case catch Fun(H, UserState) of
 	{'EXIT',_} ->
 	    {nothing, State, UserState};
 	{delete, NUS} ->
-	    Ns = add_mutation([],Forms,State),
+	    Ns = add_mutation([], Forms, State),
 	    {delete, Ns, NUS};
 	{replace, New, NUS} when is_list(New)->
 	    Ns = lists:foldl(fun(Elt, S) ->
-				     add_mutation(Elt,Forms,S)
+				     add_mutation(Elt, Forms, S)
 			     end,
 			     State, New),
 	    {replace, Ns, NUS};
 	{replace, New, NUS} ->
-	    NState = add_mutation(New,Forms,State),
-	    
-	    {replace,NState,NUS};
+	    NState = add_mutation(New, Forms, State),
+	    {replace, NState, NUS};
 	{nothing, NUS} ->
 	    {nothing, State, NUS}
     end.

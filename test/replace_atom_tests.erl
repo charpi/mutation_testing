@@ -31,8 +31,6 @@
 
 all_mutations_test() ->
     {Forms, Mutations} = test_utils:test_data(atom),
-    {R,[]} = mt_utils:fold(fun replace_atom:mutate/2,
-			   [],
-			   Forms),
+    R = replace_atom:mutate(Forms),
     test_utils:assert_mutations(Mutations,R),
     ok.

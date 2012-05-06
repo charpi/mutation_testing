@@ -31,8 +31,6 @@
 
 all_mutations_test() ->
     {Forms, Mutations} = test_utils:test_data(export),
-    {R,[]} = mt_utils:fold(fun remove_export:mutate/2,
-			   [],
-			   Forms),
+    R = remove_export:mutate(Forms),
     test_utils:assert_mutations(Mutations,R),
     ok.

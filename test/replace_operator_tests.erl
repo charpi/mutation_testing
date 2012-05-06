@@ -31,8 +31,6 @@
 
 all_mutations_test() ->
     {Forms, Mutations} = test_utils:test_data(operator),
-    {R,[]} = mt_utils:fold(fun replace_operator:mutate/2,
-			   [],
-			   Forms),
+    R = replace_operator:mutate(Forms),
     test_utils:assert_mutations(Mutations,R),
     ok.
