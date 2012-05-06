@@ -1,0 +1,28 @@
+[{attribute,1,file,{'_',1}},
+  {attribute,1,module,atom},
+  {attribute,3,export,[{foo,0}]},
+  {attribute,4,export,[{foobar,0}]},
+  {function,6,foo,0,[{clause,6,[],[],[{atom,7,foo}]}]},
+  {function,9,foobar,0,[{clause,9,[],[],[{atom,10,'foobar'},
+					 {call,11,{atom,11,foo},[]},
+					 {atom,12,'$$$$'}]}]},
+  {eof,14}].
+[{attribute,1,file,{'_',1}},
+  {attribute,1,module,atom},
+  {attribute,3,export,[{foo,0}]},
+  {attribute,4,export,[{foobar,0}]},
+  {function,6,foo,0,[{clause,6,[],[],[{atom,7,foo}]}]},
+  {function,9,foobar,0,[{clause,9,[],[],[{atom,10,'$$$$'},
+					 {call,11,{atom,11,foo},[]},
+					 {atom,12,foobar}]}]},
+  {eof,14}].
+[{attribute,1,file,{'_',1}},
+  {attribute,1,module,atom},
+  {attribute,3,export,[{foo,0}]},
+  {attribute,4,export,[{foobar,0}]},
+  {function,6,foo,0,[{clause,6,[],[],[{atom,7,'$$$$'}]}]},
+  {function,9,foobar,0,[{clause,9,[],[],[{atom,10,foobar},
+					 {call,11,{atom,11,foo},[]},
+					 {atom,12,foobar}]}]},
+  {eof,14}].
+
