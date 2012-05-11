@@ -36,9 +36,9 @@
 
 test_description(Kind, MutationModule) ->
     [{"Generate mutations", fun () ->
-				  {Forms, Mutations} = test_utils:test_data(Kind),
-				  R = MutationModule:mutate(Forms),
-				  test_utils:assert_mutations(Mutations,R)
+				    {Forms, Mutations} = test_utils:test_data(Kind),
+				    R = MutationModule:mutate(Forms),
+				    test_utils:assert_mutations(Mutations,R)
 			    end},
      {"Compile mutations", fun () ->
 				   {Forms, _} = test_utils:test_data(Kind),

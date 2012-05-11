@@ -29,6 +29,6 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-all_mutations_test() ->
+all_mutations_test_() ->
     test_utils:test_description(function_clause, remove_function_clause).
 
