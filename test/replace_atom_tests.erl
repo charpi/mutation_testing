@@ -29,8 +29,6 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-all_mutations_test() ->
-    {Forms, Mutations} = test_utils:test_data(atom),
-    R = replace_atom:mutate(Forms),
-    test_utils:assert_mutations(Mutations,R),
-    ok.
+all_mutations_test_() ->
+    test_utils:test_description(atom, replace_atom).
+

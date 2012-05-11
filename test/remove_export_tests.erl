@@ -30,7 +30,4 @@
 -include_lib("eunit/include/eunit.hrl").
 
 all_mutations_test() ->
-    {Forms, Mutations} = test_utils:test_data(export),
-    R = remove_export:mutate(Forms),
-    test_utils:assert_mutations(Mutations,R),
-    ok.
+    test_utils:test_description(export, remove_export).

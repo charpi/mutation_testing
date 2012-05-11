@@ -27,10 +27,27 @@
 
 -module(test_utils).
 
+-export([test_description/2]).
 -export([test_data/1]).
+
 -export([assert_mutations/2]).
 
 -include_lib("eunit/include/eunit.hrl").
+
+test_description(Kind, MutationModule) ->
+    [{"Generate mutations", fun () ->
+				  {Forms, Mutations} = test_utils:test_data(Kind),
+				  R = MutationModule:mutate(Forms),
+				  test_utils:assert_mutations(Mutations,R)
+			    end},
+     {"Compile mutations", fun () ->
+				   {Forms, _} = test_utils:test_data(Kind),
+				   R = MutationModule:mutate(Forms),
+				   [{ok,_,_} = compile:forms(Mutation,[binary,
+								       report_errors]) ||
+				       Mutation <- R]
+			   end}].
+
 
 test_data(Module) ->
     ModuleString = atom_to_list(Module),

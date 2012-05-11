@@ -30,7 +30,5 @@
 -include_lib("eunit/include/eunit.hrl").
 
 all_mutations_test() ->
-    {Forms, Mutations} = test_utils:test_data(function_clause),
-    R = remove_function_clause:mutate(Forms),
-    test_utils:assert_mutations(Mutations,R),
-    ok.
+    test_utils:test_description(function_clause, remove_function_clause).
+
