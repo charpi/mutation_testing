@@ -35,9 +35,28 @@ mutate(Forms) ->
 			   Forms),
     R.
 
-mutate_fun({op,V1,Op,V2,V3},State) ->
-    NewElt = {op,V1,new_op(Op),V2,V3},
-    {replace, NewElt, State}.
+mutate_fun({op,_,_,_,_} = Candidate, State) ->
+    case mutate_op(Candidate) of
+	[] ->
+	    {nothing, State};
+	NewElt ->
+	    {replace, NewElt, State}
+    end.
+
+mutate_op({op,V1,Op,V2,V3}) ->
+    Base =
+	try
+	    [{op,V1,new_op(Op),V2,V3}]
+	catch
+	    _:_ ->
+		[]
+	end,
+    MutV2 = mutate_op(V2),
+    MutV3 = mutate_op(V3),
+    Base ++ [{op,V1,Op,MV2,V3} || MV2 <- MutV2]
+	++ [{op,V1,Op,V2,MV3} || MV3 <- MutV3];
+mutate_op(_) ->
+    [].
 
 new_op('+') ->
     '-';
