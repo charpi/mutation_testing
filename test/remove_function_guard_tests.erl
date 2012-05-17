@@ -25,16 +25,9 @@
 %%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%%
 
--module(replace_atom).
+-module(remove_function_guard_tests).
 
--export([mutate/1]).
+-include_lib("eunit/include/eunit.hrl").
 
-mutate(Forms) ->
-    {R,[]} = mt_utils:fold(fun mutate_fun/2,
-			   [],
-			   Forms),
-    R.
-
-mutate_fun({atom,Line,_Atom}, State) ->
-    Replace = {atom,Line,'$$$$'},
-    {replace, Replace, State}.
+all_mutations_test_() ->
+    test_utils:test_description(function_guard, remove_function_guard).
