@@ -1,0 +1,26 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -pa
+
+
+main([Mutation,Mochiweb]) ->
+    code:add_pathz(Mutation),
+    code:add_pathz(Mochiweb),
+    
+    Modules = mochiweb_modules(Mochiweb),
+
+    Name = mt_dets_store:init("mochiweb.table"),
+    Fun = mt_dets_store:store_fun(Name),
+    
+    mt_runner:mutate({modules, Modules}, [remove_export, remove_function_clause,
+					 remove_function_guard, replace_atom, replace_operator], Fun),
+    Size = proplists:get_value(size,dets:info(Name)),
+    io:format("~p mutations generated~n",[Size]),
+    mt_dets_store:stop(Name).
+    
+    
+mochiweb_modules(Path) ->
+    {ok, [{application,_,List}]} = file:consult(Path++ "/mochiweb.app"),
+    proplists:get_value(modules, List).
+
+    
