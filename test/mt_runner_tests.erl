@@ -29,15 +29,32 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-%% module_with_store_test() ->
-%%     Self = self(),
-%%     StoreFun = fun(Module, Mutations) -> Self ! {store, Module, Mutations} end,
-    
-%%     {_Forms, Mutations} = test_utils:test_data_with_load(export),
 
-%%     ok = mt_runner:mutate({modules,[export]}, [remove_export], StoreFun),
-%%     receive
-%% 	    {store, remove_export, Mutations} -> ok
-%%     after 1000 ->
-%% 	    exit(store_fun_not_called)
-%%     end.
+module_with_store_test_() ->
+    {setup,
+     fun() -> ok end,
+     fun(_) ->
+	     Files = filelib:wildcard(filename:join([test_utils:priv_directory(),
+						     "*.beam"])),
+	     [file:delete(File)|| File <- Files]
+     end,
+     [fun() ->
+	      Self = self(),
+	      StoreFun = fun(Module, Mutations) -> Self ! {store, Module, Mutations} end,
+	      
+	      {Forms, Mutations} = test_utils:test_data_with_load(export),
+	      [[ok]] = mt_runner:mutate({modules,[export]}, [remove_export], StoreFun),
+	      
+	      receive
+		  {store, {export, original}, Forms} -> ok
+	      after 1000 ->
+		      exit(original_not_stored)
+	      end,
+	      [receive
+		   {store, {export, remove_export,_}, [_|Mutation]} -> ok;
+		   X ->
+		       exit(X)
+	       after 1000 ->
+		       exit(store_fun_not_called)
+	       end || [_|Mutation] <- Mutations]
+      end]}.

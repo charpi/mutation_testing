@@ -27,6 +27,7 @@
 
 -module(mt_dets_store_tests).
 
+-include_lib("eunit/include/eunit.hrl").
 
 store_test() ->
     BeforeTable = dets:all(),

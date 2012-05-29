@@ -30,6 +30,7 @@
 -export([test_description/2]).
 -export([test_data/1]).
 -export([test_data_with_load/1]).
+-export([priv_directory/0]).
 
 -export([assert_mutations/2]).
 
@@ -52,7 +53,7 @@ test_description(Kind, MutationModule) ->
 test_data(Module) ->
     case test_module(Module) of
 	{ok,Module,Binary} ->
-	    {ok, Mutations} = file:consult(test_path(atom_to_list(Module) ++ "_mutations.data")),
+	    {ok, Mutations} = file:consult(module_path(atom_to_list(Module) ++ "_mutations.data")),
 	    {ok,{Module,[{abstract_code,AST}]}} = beam_lib:chunks(Binary,[abstract_code]),
 	    {raw_abstract_v1, Forms} =  AST,
 	    {Forms, Mutations};
@@ -62,18 +63,22 @@ test_data(Module) ->
 
 test_data_with_load(Test) ->
     {ok, Module, Binary} = test_module(Test),
+    code:add_pathz(priv_directory()),
     {module, Test} = code:load_binary(Module,"",Binary),
+    ok = file:write_file(module_path(atom_to_list(Test)) ++ ".beam", Binary),
     test_data(Test).
 
 test_module(Module) ->
     ModuleString = atom_to_list(Module),
-    Source = test_path(ModuleString),
+    Source = module_path(ModuleString),
     compile:file(Source,[debug_info,binary,report_errors]).
 
-test_path(String) ->
+module_path(String) ->
+    filename:join([priv_directory(), String]).
+
+priv_directory() ->
     [BaseDir|_] = code:get_path(),
-    filename:join([BaseDir, "..", "priv", String]).
-    
+    filename:join([BaseDir, "..", "priv"]).
 
 assert_mutations([],[]) ->
     ok;
