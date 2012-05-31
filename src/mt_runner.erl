@@ -1,5 +1,5 @@
 %%%
-%%% Copyright (c) 2012, Nicolas Charpentier, Diana Corbacho & Erlang Solutions Ltd.
+%%% Copyright (c) 2012, Nicolas Charpentier, Diana Corbacho
 %%% All rights reserved.
 %%%
 %%% Redistribution and use in source and binary forms, with or without
@@ -13,15 +13,16 @@
 %%%       names of its contributors may be used to endorse or promote products
 %%%       derived from this software without specific prior written permission.
 %%%
-%%% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-%%% ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-%%% WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-%%% DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-%%% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-%%% (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-%%% LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-%%% ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-%%% (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%%% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+%%% "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+%%% LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+%%% A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+%%% HOLDER> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+%%% EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+%%% PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+%%% PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+%%% LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+%%% NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 %%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%%
 
@@ -35,11 +36,12 @@ mutate({modules, Modules}, Mutations, Fun) ->
 
 mutate_module(Module, Mutations, Fun) ->
     {Module, Binary, _} = code:get_object_code(Module),
-    {ok,{Module,[{abstract_code,{raw_abstract_v1,Forms}}]}} = beam_lib:chunks(Binary,[abstract_code]),
+    {ok,{Module, Abstract}} = beam_lib:chunks(Binary,[abstract_code]),
+    [{abstract_code,{raw_abstract_v1,Forms}}] = Abstract,
     Fun({Module,original}, Forms),
-    [begin 
-	 List = Mutation:mutate(Forms),
-	 notify(Fun, Module, Mutation, List)
+    [begin
+         List = Mutation:mutate(Forms),
+         notify(Fun, Module, Mutation, List)
      end|| Mutation <- Mutations].
 
 notify(Fun, Module, Mutation, List) ->
@@ -53,3 +55,5 @@ notify(Fun, Module, Mutation, [H|T], Index) ->
 
 key(Module, Mutation, Index) ->
     {Module, Mutation, Index}.
+
+

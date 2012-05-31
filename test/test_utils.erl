@@ -1,5 +1,5 @@
 %%%
-%%% Copyright (c) 2012, Nicolas Charpentier, Diana Corbacho & Erlang Solutions Ltd.
+%%% Copyright (c) 2012, Nicolas Charpentier, Diana Corbacho
 %%% All rights reserved.
 %%%
 %%% Redistribution and use in source and binary forms, with or without
@@ -13,15 +13,16 @@
 %%%       names of its contributors may be used to endorse or promote products
 %%%       derived from this software without specific prior written permission.
 %%%
-%%% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-%%% ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-%%% WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-%%% DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-%%% DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-%%% (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-%%% LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-%%% ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-%%% (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%%% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+%%% "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+%%% LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+%%% A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT
+%%% HOLDER> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+%%% EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+%%% PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+%%% PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+%%% LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+%%% NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 %%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%%
 
@@ -37,28 +38,30 @@
 -include_lib("eunit/include/eunit.hrl").
 
 test_description(Kind, MutationModule) ->
-    [{"Generate mutations", fun () ->
-				    {Forms, Mutations} = test_utils:test_data(Kind),
-				    R = MutationModule:mutate(Forms),
-				    test_utils:assert_mutations(Mutations,R)
-			    end},
-     {"Compile mutations", fun () ->
-				   {Forms, _} = test_utils:test_data(Kind),
-				   R = MutationModule:mutate(Forms),
-				   [{ok,_,_} = compile:forms(Mutation,[binary,
-								       report_errors]) ||
-				       Mutation <- R]
-			   end}].
+    [{"Generate mutations:"++atom_to_list(Kind),
+      fun () ->
+              {Forms, Mutations} = test_utils:test_data(Kind),
+              R = MutationModule:mutate(Forms),
+              test_utils:assert_mutations(Mutations,R)
+      end},
+     {"Compile mutations:"++atom_to_list(Kind),
+      fun () ->
+              {Forms, _} = test_utils:test_data(Kind),
+              R = MutationModule:mutate(Forms),
+              [{ok,_,_} = compile:forms(Mutation,[binary,
+                                                  report_errors]) ||
+                  Mutation <- R]
+      end}].
 
 test_data(Module) ->
     case test_module(Module) of
-	{ok,Module,Binary} ->
-	    {ok, Mutations} = file:consult(module_path(atom_to_list(Module) ++ "_mutations.data")),
-	    {ok,{Module,[{abstract_code,AST}]}} = beam_lib:chunks(Binary,[abstract_code]),
-	    {raw_abstract_v1, Forms} =  AST,
-	    {Forms, Mutations};
-	Errors ->
-	    exit({error_during_compilation,Module,Errors})
+        {ok,Module,Binary} ->
+            {ok, Mutations} = file:consult(module_path(atom_to_list(Module) ++ "_mutations.data")),
+            {ok,{Module,[{abstract_code,AST}]}} = beam_lib:chunks(Binary,[abstract_code]),
+            {raw_abstract_v1, Forms} =  AST,
+            {Forms, Mutations};
+        Errors ->
+            exit({error_during_compilation,Module,Errors})
     end.
 
 test_data_with_load(Test) ->

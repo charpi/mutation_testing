@@ -23,6 +23,16 @@
       </roles>
       <timezone>0</timezone>
     </developer>
+    <developer>
+      <id>Diana Corbacho</id>
+      <name>Diana Corbacho</name>
+      <email>diana.corbacho@erlang-solutions.com</email>
+      <url>http://erlang-solutions.com</url>
+      <roles>
+	<role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
   </developers>
   <issueManagement>
     <system>GitHub</system>
@@ -44,6 +54,7 @@
       <plugin>
 	<groupId>com.mycila.maven-license-plugin</groupId>
 	<artifactId>maven-license-plugin</artifactId>
+	<version>1.9.0</version>
 	<configuration>
 	  <header>src/etc/header.txt</header>
 	  <strictCheck>true</strictCheck>
